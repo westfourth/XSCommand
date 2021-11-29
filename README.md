@@ -2,7 +2,7 @@
 
 以命令模式设计的中介者，用于模块间解藕，也可用作控制器解藕。
 
-![image](./XSCommand.png)
+![pic1](/Users/xisi/Desktop/XSCommand.png)
 
 ## 举例
 
@@ -215,4 +215,30 @@ TestCommand *c = [TestCommand new];
 c.bgColor = [UIColor redColor];
 c.titleName = @"ABC";
 [self presentViewController:[c command] animated:YES completion:nil];
+```
+
+## 问题
+
+### 关于业务模型的引用
+
+如果ACommand、BCommand层没有引用业务模型，那么在ACommand、BCommand层中需要将具体业务模型类型改为id类型
+
+``` objc
+@interface TestCommand : XSCommand <XSCommandStoryboard>
+@property (nonatomic) UIColor *bgColor;
+@property (nonatomic) id person;
+@end
+```
+
+### 关于回调
+
+一般来说，模块（或控制器）之间是不需要回调的，如果有，采用block形式。
+
+如果ACommand、BCommand层没有引用业务模型，那么在ACommand、BCommand层中需要将具体业务模型类型改为id类型
+
+``` objc
+@interface TestCommand : XSCommand <XSCommandStoryboard>
+@property (nonatomic) UIColor *bgColor;
+@property (nonatomic) void (^callback)(id model);
+@end
 ```
