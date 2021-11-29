@@ -2,7 +2,7 @@
 
 以命令模式设计的中介者，用于模块间解藕，也可用作控制器解藕。
 
-![image](XSCommand.png)
+![image](./XSCommand.png)
 
 ## 举例
 
