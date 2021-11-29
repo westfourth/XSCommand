@@ -221,7 +221,7 @@ c.titleName = @"ABC";
 
 ### 关于业务模型的引用
 
-如果ACommand、BCommand层没有引用业务模型，那么在ACommand、BCommand层中需要将具体业务模型类型改为id类型
+如果ACommand、BCommand层没有引用业务模型，那么在ACommand、BCommand层中需要将具体业务模型类型改为`id`类型
 
 ``` objc
 @interface TestCommand : XSCommand <XSCommandStoryboard>
@@ -232,9 +232,9 @@ c.titleName = @"ABC";
 
 ### 关于回调
 
-一般来说，模块（或控制器）之间是不需要回调的，如果有，采用block形式。
+一般来说，模块（或控制器）之间是不需要回调的，如果有，采用`block`形式。
 
-如果ACommand、BCommand层没有引用业务模型，那么在ACommand、BCommand层中需要将具体业务模型类型改为id类型
+如果ACommand、BCommand层没有引用业务模型，那么在ACommand、BCommand层中需要将具体业务模型类型改为`id`类型
 
 ``` objc
 @interface TestCommand : XSCommand <XSCommandStoryboard>
