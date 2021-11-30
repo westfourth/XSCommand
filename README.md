@@ -115,7 +115,7 @@ c.bgColor = [UIColor redColor];
 [self presentViewController:[c command] animated:YES completion:nil];
 ```
 
-## 进阶使用1：有不同的属性名
+## 进阶使用 1：有不同的属性名
 
 -  **BViewController**
 
@@ -140,7 +140,7 @@ c.bgColor = [UIColor redColor];
 
 这时候`BViewController.bgColor`与`BCommand.bg_color`名称不一致。
 
-#### 处理方法：
+### 处理方法：
 
 在`BViewController`模块中写个`BCommand `分类，重写`-command`方法
 
@@ -165,7 +165,7 @@ c.bgColor = [UIColor redColor];
 @end
 ```
 
-## 进阶使用2：有自定义的初始化方法
+## 进阶使用 2：有自定义的初始化方法
 
 -  **BViewController**
 
@@ -177,7 +177,7 @@ c.bgColor = [UIColor redColor];
 @end
 ```
 
-#### 处理方法：
+### 处理方法：
 
 在`BViewController`模块中写个`BCommand `分类，重写`-command`方法；
 
@@ -221,7 +221,7 @@ c.bgColor = [UIColor redColor];
 @end
 ```
 
-#### 调用：
+### 调用：
 
 ``` objc
     BCommand *c = [BCommand new];
@@ -230,7 +230,7 @@ c.bgColor = [UIColor redColor];
 ```
 
 
-## 进阶使用3：block回调
+## 进阶使用 3：block回调
 
 把该block当作普通的属性即可。
 
@@ -254,7 +254,7 @@ c.bgColor = [UIColor redColor];
 @end
 ```
 
-#### 调用：
+### 调用：
 
 ``` objc
     BCommand *c = [BCommand new];
@@ -299,7 +299,7 @@ c.bgColor = [UIColor redColor];
 @end
 ```
 
-#### 调用：
+### 调用：
 
 
 ``` objc
