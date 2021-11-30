@@ -2,7 +2,7 @@
 
 以命令模式设计的中介者，用于模块间解藕，也可用作控制器解藕。
 
-![架构设计](XSCommand.png)
+![架构设计](/Users/xisi/Documents/OneDrive/技术/Objective-C/XSCommand/XSCommand.png)
 
 ## 举例
 
@@ -234,9 +234,13 @@ c.bgColor = [UIColor redColor];
 
 ### 3.  有回调
 
--  **block回调：** 把该block当作普通的属性即可。
+#### block回调
 
--  **delegate回调：** 在`BCommand`中复制`BViewController`中的`delegate`、`@protocol`，如果不该引用某个类，则把相应参数类型该为`id`。
+把该block当作普通的属性即可。
+
+#### delegate回调
+
+在`BCommand`中复制`BViewController`中的`delegate`、`@protocol`，如果不该引用某个类，则把相应参数类型该为`id`。
 
 -  **BViewController**
 
