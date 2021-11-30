@@ -115,9 +115,7 @@ c.bgColor = [UIColor redColor];
 [self presentViewController:[c command] animated:YES completion:nil];
 ```
 
-## 高级使用
-
-### 1.  有不同的属性名
+## 进阶使用1：有不同的属性名
 
 -  **BViewController**
 
@@ -167,7 +165,7 @@ c.bgColor = [UIColor redColor];
 @end
 ```
 
-### 2.  有自定义的初始化方法
+## 进阶使用2：有自定义的初始化方法
 
 -  **BViewController**
 
@@ -232,13 +230,41 @@ c.bgColor = [UIColor redColor];
 ```
 
 
-### 3.  有回调
-
-#### block回调
+## 进阶使用3：block回调
 
 把该block当作普通的属性即可。
 
-#### delegate回调
+-  **BViewController**
+
+``` objc
+@interface BViewController : UIViewController
+
+@property (nonatomic) void (^callback)(void);
+
+@end
+```
+
+-  **BCommand**
+
+``` objc
+@interface BCommand : XSCommand
+
+@property (nonatomic) void (^callback)(void);
+
+@end
+```
+
+#### 调用：
+
+``` objc
+    BCommand *c = [BCommand new];
+    c.callback = ^{
+        puts(__func__);
+    };
+    [self presentViewController:[c command] animated:YES completion:nil];
+```
+
+## 进阶使用4：delegate回调
 
 在`BCommand`中复制`BViewController`中的`delegate`、`@protocol`，如果不该引用某个类，则把相应参数类型该为`id`。
 
