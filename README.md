@@ -2,44 +2,44 @@
 
 以命令模式设计的中介者，用于模块间解藕，也可用作控制器解藕。
 
-![pic1](XSCommand.png)
+![架构设计](XSCommand.png)
 
 ## 举例
 
--  **ViewController**
+-  **AViewController**
 
 ``` objc
-@interface ViewController : UIViewController
+@interface AViewController : UIViewController
 @end
 ```
 
--  **TestViewController**
+-  **BViewController**
 
 ``` objc
-@interface TestViewController : UIViewController
+@interface BViewController : UIViewController
 @property (nonatomic) UIColor *bgColor;
 @end
 ```
 
-## 简单使用
+## 基本使用
 
-使用时，属性名相同即可，例如TestViewController.bgColor <--> TestCommand.bgColor。
+使用时，属性名相同即可，例如`BViewController.bgColor` <--> `BCommand.bgColor`。
 
 
 ### 1.  使用Storyboard方式
 
-实现XSCommandStoryboard协议，并提供storyboardName
+实现`XSCommandStoryboard`协议，并提供storyboardName
 
--  **TestCommand**
+-  **BCommand**
 
 ``` objc
-@interface TestCommand : XSCommand <XSCommandStoryboard>
+@interface BCommand : XSCommand <XSCommandStoryboard>
 @property (nonatomic) UIColor *bgColor;
 @end
 ```
 
 ``` objc
-@implementation TestCommand
+@implementation BCommand
 @synthesize storyboardName;
 
 - (instancetype)init
@@ -47,7 +47,7 @@
     self = [super init];
     if (self) {
         self.storyboardName = @"Main";
-        self.className = @"TestViewController";
+        self.className = @"BViewController";
     }
     return self;
 }
@@ -57,24 +57,24 @@
 
 ### 2.  使用Nib方式
 
-实现XSCommandNib协议
+实现`XSCommandNib`协议
 
--  **TestCommand**
+-  **BCommand**
 
 ``` objc
-@interface TestCommand : XSCommand <XSCommandNib>
+@interface BCommand : XSCommand <XSCommandNib>
 @property (nonatomic) UIColor *bgColor;
 @end
 ```
 
 ``` objc
-@implementation TestCommand
+@implementation BCommand
 
 - (instancetype)init
 {
     self = [super init];
     if (self) {
-        self.className = @"TestViewController";
+        self.className = @"BViewController";
     }
     return self;
 }
@@ -84,24 +84,22 @@
 
 ### 3.  使用Code方式
 
-实现XSCommandNib协议
-
--  **TestCommand**
+-  **BCommand**
 
 ``` objc
-@interface TestCommand : XSCommand
+@interface BCommand : XSCommand
 @property (nonatomic) UIColor *bgColor;
 @end
 ```
 
 ``` objc
-@implementation TestCommand
+@implementation BCommand
 
 - (instancetype)init
 {
     self = [super init];
     if (self) {
-        self.className = @"TestViewController";
+        self.className = @"BViewController";
     }
     return self;
 }
@@ -112,116 +110,188 @@
 ### 调用
 
 ``` objc
-TestCommand *c = [TestCommand new];
+BCommand *c = [BCommand new];
 c.bgColor = [UIColor redColor];
 [self presentViewController:[c command] animated:YES completion:nil];
 ```
 
-## 高级使用 
+## 高级使用
 
-如果属性名不相同，或者有自定义的初始化方法，需要在TestViewController模块中写个TestCommand分类，重写-command方法。
+### 1.  有不同的属性名
 
-
--  **TestViewController.h**
+-  **BViewController**
 
 ``` objc
-@interface TestViewController : UIViewController
+@interface BViewController : UIViewController
 
 @property (nonatomic) UIColor *bgColor;
-@property (nonatomic) NSString *title_name;
-
-- (instancetype)initWithA:(NSInteger)a B:(NSInteger)b;
 
 @end
 ```
 
--  **TestCommand**
+-  **BCommand**
 
 ``` objc
-@interface TestCommand : XSCommand
-@property (nonatomic) UIColor *bgColor;
-@property (nonatomic) NSString *titleName;
-@end
-```
+@interface BCommand : XSCommand
 
-``` objc
-@implementation TestCommand
-
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        self.className = @"TestViewController";
-    }
-    return self;
-}
+@property (nonatomic) UIColor *bg_color;
 
 @end
 ```
 
--  **TestViewController.m**
 
-在此模块中写个TestCommand分类，并重写-command方法
+这时候`BViewController.bgColor`与`BCommand.bg_color`名称不一致。
+
+#### 处理方法：
+
+在`BViewController`模块中写个`BCommand `分类，重写`-command`方法
+
+-  **BViewController**
 
 ``` objc
-#import "TestCommand.h"
+#import "BCommand.h"
 
-@interface TestCommand (Test)
-@end
-
-@implementation TestCommand (Test)
+//  可以不写 @interface BCommand(XXX)
+@implementation BCommand (XXX)
 
 - (__kindof UIViewController *)command {
-    TestViewController *vc = [[TestViewController alloc] initWithA:2 B:3];
-    vc.bgColor = self.bgColor;
-    vc.title_name = self.titleName;
+    BViewController *vc = [BViewController new];
+    vc.bgColor = self.bg_color;
     return vc;
 }
 
 @end
+
+@implementation BViewController
+
+@end
 ```
 
+### 2.  有自定义的初始化方法
+
+-  **BViewController**
+
 ``` objc
-@interface TestViewController ()
-@property (nonatomic) NSInteger a;
-@property (nonatomic) NSInteger b;
+@interface BViewController : UIViewController
+
+- (instancetype)initWithArray:(NSArray *)array;
+
+@end
+```
+
+#### 处理方法：
+
+在`BViewController`模块中写个`BCommand `分类，重写`-command`方法；
+
+并在`BCommand `中新增属性，持有需要传递的参数。
+
+-  **BViewController**
+
+``` objc
+#import "BCommand.h"
+
+//  可以不写 @interface BCommand(XXX)
+@implementation BCommand (XXX)
+
+- (__kindof UIViewController *)command {
+    BViewController *vc = [[BViewController alloc] initWithArray:self.array];
+    return vc;
+}
+
 @end
 
-@implementation TestViewController
+@implementation BViewController
 
-- (instancetype)initWithA:(NSInteger)a B:(NSInteger)b {
+- (instancetype)initWithArray:(NSArray *)array {
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
-        self.a = a;
-        self.b = b;
+        NSLog(@">>> %@", array);
     }
     return self;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    self.view.backgroundColor = self.bgColor;
-    printf(">>> %s\n", self.title_name.UTF8String);
-    printf(">>> a = %ld, b = %ld\n", self.a, self.b);
-}
+@end
+```
+
+-  **BCommand**
+
+``` objc
+@interface BCommand : XSCommand
+
+@property (nonatomic) NSArray *array;
 
 @end
 ```
 
-### 调用
+#### 调用：
 
 ``` objc
-TestCommand *c = [TestCommand new];
-c.bgColor = [UIColor redColor];
-c.titleName = @"ABC";
-[self presentViewController:[c command] animated:YES completion:nil];
+    BCommand *c = [BCommand new];
+    c.array = @[@"ABC", @"123"];
+    [self presentViewController:[c command] animated:YES completion:nil];
 ```
+
+
+### 3.  有回调
+
+-  **block回调：** 把该block当作普通的属性即可。
+
+-  **delegate回调：** 在`BCommand`中复制`BViewController`中的`delegate`、`@protocol`，如果不该引用某个类，则把相应参数类型该为`id`。
+
+-  **BViewController**
+
+``` objc
+@interface BViewController : UIViewController
+@property (nonatomic) id<BViewControllerDelegate> delegate;
+@end
+
+@protocol BViewControllerDelegate <NSObject>
+- (void)didDismiss:(BViewController *)vc;
+@end
+```
+
+-  **BCommand**
+
+``` objc
+@interface BCommand : XSCommand
+
+//  改变协议类型
+@property (nonatomic) id<BCommandDelegate> delegate;
+
+@end
+
+//  复制 @protocol BViewControllerDelegate，将其改名
+@protocol BCommandDelegate <NSObject>
+
+//  防止引入BViewController，将参数类型改为UIViewController
+- (void)didDismiss:(UIViewController *)vc;
+
+@end
+```
+
+#### 调用：
+
+
+``` objc
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    BCommand *c = [BCommand new];
+    c.delegate = self;
+    [self presentViewController:[c command] animated:YES completion:nil];
+}
+
+- (void)didDismiss:(UIViewController *)vc {
+
+}
+
+```
+
 
 ## 问题
 
 ### 关于业务模型的引用
 
-如果ACommand、BCommand层没有引用业务模型，那么在ACommand、BCommand层中需要将具体业务模型类型改为`id`类型
+如果ACommand、BCommand层没有引用业务模型，那么在ACommand、BCommand层中需要将具体业务模型类型改为`id`类型。
 
 ``` objc
 @interface TestCommand : XSCommand <XSCommandStoryboard>
@@ -230,15 +300,3 @@ c.titleName = @"ABC";
 @end
 ```
 
-### 关于回调
-
-一般来说，模块（或控制器）之间是不需要回调的，如果有，采用`block`形式。
-
-如果ACommand、BCommand层没有引用业务模型，那么在ACommand、BCommand层中需要将具体业务模型类型改为`id`类型
-
-``` objc
-@interface TestCommand : XSCommand <XSCommandStoryboard>
-@property (nonatomic) UIColor *bgColor;
-@property (nonatomic) void (^callback)(id model);
-@end
-```
