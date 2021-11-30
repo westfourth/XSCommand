@@ -264,7 +264,7 @@ c.bgColor = [UIColor redColor];
     [self presentViewController:[c command] animated:YES completion:nil];
 ```
 
-## 进阶使用4：delegate回调
+## 进阶使用 4：delegate回调
 
 在`BCommand`中复制`BViewController`中的`delegate`、`@protocol`，如果不该引用某个类，则把相应参数类型该为`id`。
 
