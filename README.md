@@ -4,6 +4,7 @@
 
 ![架构设计](XSCommand.png)
 
+
 ## 举例
 
 -  **AViewController**
@@ -20,6 +21,7 @@
 @property (nonatomic) UIColor *bgColor;
 @end
 ```
+
 
 ## 基本使用
 
@@ -115,6 +117,7 @@ c.bgColor = [UIColor redColor];
 [self presentViewController:[c command] animated:YES completion:nil];
 ```
 
+
 ## 进阶使用 1：有不同的属性名
 
 -  **BViewController**
@@ -164,6 +167,7 @@ c.bgColor = [UIColor redColor];
 
 @end
 ```
+
 
 ## 进阶使用 2：有自定义的初始化方法
 
@@ -230,7 +234,102 @@ c.bgColor = [UIColor redColor];
 ```
 
 
-## 进阶使用 3：block回调
+## 进阶使用 3：有多个自定义的初始化方法
+
+-  **BViewController**
+
+``` objc
+@interface BViewController : UIViewController
+
+- (instancetype)initWithArray:(NSArray *)array;
+
+- (instancetype)initWithText:(NSString *)text count:(NSInteger)count;
+
+@end
+```
+
+### 处理方法：
+
+在`BViewController`模块中写个`BCommand `分类，重写`-command`方法；
+
+在`BCommand `中新增的每个属性，对应需要传递的参数；**并额外新增一个枚举**。
+
+-  **BViewController**
+
+``` objc
+#import "BCommand.h"
+
+//  可以不写 @interface BCommand(XXX)
+@implementation BCommand (XXX)
+
+- (__kindof UIViewController *)command {
+    BViewController *vc;
+    if (self.initType == BCommandInitTypeWithArray) {
+        vc = [[BViewController alloc] initWithArray:self.array];
+    } else {
+        vc = [[BViewController alloc] initWithText:self.text count:self.count];
+    }
+    return vc;
+}
+
+@end
+
+@implementation BViewController
+
+- (instancetype)initWithArray:(NSArray *)array {
+    self = [super initWithNibName:nil bundle:nil];
+    if (self) {
+        NSLog(@">>> %@", array);
+    }
+    return self;
+}
+
+- (instancetype)initWithText:(NSString *)text count:(NSInteger)count {
+    self = [super initWithNibName:nil bundle:nil];
+    if (self) {
+        NSLog(@">>> %@, %ld", text, count);
+    }
+    return self;
+}
+
+@end
+```
+
+-  **BCommand**
+
+``` objc
+typedef NS_ENUM(NSUInteger, BCommandInitType) {
+    BCommandInitTypeWithArray = 0,      //  默认
+    BCommandInitTypeWithTextAndCount,
+};
+
+@interface BCommand : XSCommand
+
+@property (nonatomic) BCommandInitType initType;
+
+@property (nonatomic) NSArray *array;
+
+@property (nonatomic) NSString *text;
+
+@property (nonatomic) NSInteger count;
+
+@end
+```
+
+### 调用：
+
+``` objc
+    BCommand *c = [BCommand new];
+    c.array = @[@"ABC", @"123"];
+    c.text = @"一二三";
+    c.count = 3;
+    
+    c.initType = BCommandInitTypeWithTextAndCount;
+    [self presentViewController:[c command] animated:YES completion:nil];
+```
+
+
+## 进阶使用 4：block回调
 
 把该block当作普通的属性即可。
 
@@ -264,7 +363,8 @@ c.bgColor = [UIColor redColor];
     [self presentViewController:[c command] animated:YES completion:nil];
 ```
 
-## 进阶使用 4：delegate回调
+
+## 进阶使用 5：delegate回调
 
 在`BCommand`中复制`BViewController`中的`delegate`、`@protocol`，如果不该引用某个类，则把相应参数类型该为`id`。
 
@@ -317,9 +417,7 @@ c.bgColor = [UIColor redColor];
 ```
 
 
-## 问题
-
-### 关于业务模型的引用
+## 进阶使用 6：关于业务模型的引用
 
 如果ACommand、BCommand层没有引用业务模型，那么在ACommand、BCommand层中需要将具体业务模型类型改为`id`类型。
 
