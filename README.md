@@ -320,10 +320,8 @@ typedef NS_ENUM(NSUInteger, BCommandInitType) {
 
 ``` objc
     BCommand *c = [BCommand new];
-    c.array = @[@"ABC", @"123"];
     c.text = @"一二三";
     c.count = 3;
-    
     c.initType = BCommandInitTypeWithTextAndCount;
     [self presentViewController:[c command] animated:YES completion:nil];
 ```
